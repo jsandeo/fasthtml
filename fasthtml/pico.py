@@ -14,6 +14,7 @@ from fastcore.xml import *
 from fastcore.meta import use_kwargs, delegates
 from .components import *
 from .xtend import *
+import json
 
 try: from IPython import display
 except ImportError: display=None
@@ -85,6 +86,7 @@ def Container(*args, **kwargs)->FT:
     return Main(*args, cls="container", **kwargs)
 
 # %% ../nbs/api/04_pico.ipynb
-def PicoBusy():
-    return (HtmxOn('beforeRequest', "event.detail.elt.setAttribute('aria-busy', 'true' )"),
-            HtmxOn('afterRequest',  "event.detail.elt.setAttribute('aria-busy', 'false')"))
+def PicoBusy(hx_indicator=""):
+    js_safe_str_selector = json.dumps(hx_indicator)
+    return (HtmxOn('beforeRequest', "({hi} ? document.querySelector({hi}) : event.detail.elt).setAttribute('aria-busy', 'true' )".format(hi=js_safe_str_selector)),
+            HtmxOn('afterRequest',  "({hi} ? document.querySelector({hi}) : event.detail.elt).setAttribute('aria-busy', 'false')".format(hi=js_safe_str_selector)))
